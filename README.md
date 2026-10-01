@@ -8,7 +8,7 @@
 `chamber` · `fire` · `doctor` · `medic` · `shrimp` · `detective` · `vent`
 
 </div>
-## Install
+# ⚡ Install
 
 
 ```powershell
