@@ -372,14 +372,6 @@ Pistol keeps runtime data outside your project repository.
 Windows runtime data:
 %LOCALAPPDATA%\Pistol\
 
-Example structure:
-Pistol/
-├── chambers/
-├── magazines/
-├── projects/
-├── logs/
-└── state.lock
-
 Persistent configuration:
 %APPDATA%\Pistol\
 
