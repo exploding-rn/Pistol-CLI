@@ -8,8 +8,7 @@
 `chamber` · `fire` · `doctor` · `medic` · `shrimp` · `detective` · `vent`
 
 </div>
-# ⚡ Install
-
+## Install
 
 ```powershell
 irm https://raw.githubusercontent.com/exploding-rn/Pistol-CLI/main/install.ps1 | iex
