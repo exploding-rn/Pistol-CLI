@@ -13,8 +13,7 @@
 
 ## INSTALL
 
-powershell:
-'irm https://raw.githubusercontent.com/exploding-rn/Pistol-CLI/main/install.ps1 | iex'
+irm https://raw.githubusercontent.com/exploding-rn/Pistol-CLI/main/install.ps1 | iex
 
 
 ## What is Pistol?
