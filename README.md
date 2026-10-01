@@ -234,25 +234,6 @@ It can inspect:
 - Module relationships
 - Entrypoints
 - Basic call relationships
-Example:
-PROJECT MAP
-
-main.py
-├── imports config
-├── imports api.routes
-├── function startup()
-└── FastAPI app
-
-api/
-└── routes.py
-    ├── GET /health
-    ├── POST /api
-    └── imports services.backend
-
-services/
-└── backend.py
-    ├── function send_request()
-    └── reads BACKEND_URL
 
 Useful modes:
 pistol shrimp --tree
