@@ -1,12 +1,7 @@
 <div align="center">
 
 #  Pistol CLI
-██████╗ ██╗███████╗████████╗ ██████╗ ██╗
-██╔══██╗██║██╔════╝╚══██╔══╝██╔═══██╗██║
-██████╔╝██║███████╗   ██║   ██║   ██║██║
-██╔═══╝ ██║╚════██║   ██║   ██║   ██║██║
-██║     ██║███████║   ██║   ╚██████╔╝███████╗
-╚═╝     ╚═╝╚══════╝   ╚═╝    ╚═════╝ ╚══════╝
+
 
 ### A Windows-first developer toolkit for running, inspecting, debugging, and mapping projects from the terminal.
 
@@ -18,7 +13,8 @@
 
 ## INSTALL
 
-irm https://raw.githubusercontent.com/exploding-rn/Pistol-CLI/main/install.ps1 | iex
+'''irm https://raw.githubusercontent.com/exploding-rn/Pistol-CLI/main/install.ps1 | iex'''
+
 
 ## What is Pistol?
 
