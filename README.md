@@ -1,13 +1,13 @@
 <div align="center">
 
-#  Pistol CLI
+# Pistol CLI
 
-
-### A Windows-first developer toolkit for running, inspecting, debugging, and mapping projects from the terminal.
+A Windows-first developer toolkit for running, inspecting, debugging, and mapping projects from the terminal.
 
 `chamber` · `fire` · `doctor` · `medic` · `shrimp` · `detective` · `vent`
 
 </div>
+
 ## Install
 
 ```powershell
