@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pistol-dev"
+version = "1.0.0"
+description = "Offline, Windows-first developer tools and isolated project runtimes"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Pistol contributors"}]
+dependencies = ["psutil>=5.9,<8"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+pistol = "pistol.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["pistol*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -p no:cacheprovider"
