@@ -16,7 +16,7 @@ Pistol is a developer CLI built around the idea that common project tasks should
 
 Instead of juggling different commands for environments, ports, project diagnostics, process inspection, cleanup, and codebase analysis, Pistol puts them behind one command:
 
-```powershell
+powershell
 pistol
 
 Examples:
@@ -444,4 +444,4 @@ Small command. Lots of tools.
 <sub>
 Development disclaimer: Pistol was vibe coded with assistance from Codex, GPT Astra, and GPT Sol. Generated code was tested, iterated on, and modified during development.
 </sub>
-```
+
