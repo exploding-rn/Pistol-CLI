@@ -51,10 +51,11 @@ def test_chamber_environment_hidden_in_json(project, capsys):
 
 def test_cli_explicit_python_entrypoint_overrides_package_json(project, monkeypatch, capsys):
     from pistol import chamber
+    from pistol.ports import free_port
     (project / "package.json").write_text('{"scripts":{"dev":"node web.js"}}', encoding="utf-8")
     (project / "pistolata.py").write_text("print('ready')", encoding="utf-8")
     monkeypatch.setattr(chamber.venv.EnvBuilder, "create", lambda *args, **kwargs: None)
-    assert main(["chamber", "--name", "pistol-test", "--port", "2347", "--entrypoint", "pistolata.py", "--project", str(project)]) == 0
+    assert main(["chamber", "--name", "pistol-test", "--port", str(free_port()), "--entrypoint", "pistolata.py", "--project", str(project)]) == 0
     capsys.readouterr()
     item = chamber.get("pistol-test")
     assert item.runtime == "python"

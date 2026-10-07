@@ -109,3 +109,61 @@ def settings() -> dict:
 def project_state(project: Path) -> Path:
     key = hashlib.sha256(os.path.normcase(str(project.resolve())).encode("utf-8")).hexdigest()[:24]
     return data_dir() / "projects" / key
+
+
+def boolean(value: str) -> bool:
+    """CLI booleans deliberately accept only the documented spelling."""
+    if value not in ("true", "false"):
+        raise ValueError("Use true or false.")
+    return value == "true"
+
+
+def hostname(value: str, *, label: bool = False) -> str:
+    if not isinstance(value, str) or not value or value != value.strip():
+        raise PistolError("A DNS name must be a nonempty name without surrounding whitespace.")
+    try:
+        value = (value[:-1] if value.endswith(".") else value).encode("idna").decode("ascii").lower()
+    except UnicodeError as exc:
+        raise PistolError("Invalid DNS name.") from exc
+    parts = value.split(".")
+    if len(value) > 253 or (label and len(parts) != 1) or any(
+        not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", part) for part in parts
+    ):
+        raise PistolError("DNS names require labels of 1–63 letters, digits or internal hyphens.")
+    return value
+
+
+def global_config() -> dict:
+    import socket
+    machine = re.sub(r"[^a-z0-9-]", "-", socket.gethostname().split(".")[0].lower()).strip("-")[:63].rstrip("-") or "localhost"
+    result = {"chamberlain": "pistolchamber", "host": machine, "https": False}
+    stored = settings()
+    for key in result:
+        if key in stored:
+            result[key] = stored[key]
+    return validate_global(result)
+
+
+def validate_global(values: dict) -> dict:
+    result = dict(values)
+    for key in ("chamberlain", "host"):
+        if key in result:
+            result[key] = hostname(result[key], label=True)
+    if "https" in result and type(result["https"]) is not bool:
+        raise PistolError("HTTPS must be true or false.")
+    return result
+
+
+def update_global(changes: dict) -> dict:
+    if set(changes) - {"chamberlain", "host", "https"}:
+        raise PistolError("Unknown global setting.")
+    changes = validate_global(changes)
+    # Prepare the CA before committing HTTPS; never enroll trust implicitly.
+    if changes.get("https"):
+        from .certificates import ensure_ca
+        ensure_ca()
+    with state_lock():
+        value = settings()
+        value.update(changes)
+        atomic_json(config_dir() / "config.json", value)
+    return global_config()

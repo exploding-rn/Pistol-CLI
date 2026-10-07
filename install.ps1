@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 $ErrorActionPreference = "Stop"
 
 # ============================================================
@@ -713,3 +714,286 @@ catch {
 
     Fail-Install $_.Exception.Message
 }
+=======
+$ErrorActionPreference = "Stop"
+
+# ------------------------------------------------------------
+# Pistol CLI Installer
+# ------------------------------------------------------------
+
+$RepoUrl = "https://github.com/exploding-rn/Pistol-CLI.git"
+$InstallRoot = Join-Path $env:LOCALAPPDATA "Pistol"
+$InstallDir = Join-Path $InstallRoot "source"
+$VenvDir = Join-Path $InstallDir ".venv"
+$ScriptsDir = Join-Path $VenvDir "Scripts"
+$PythonExe = Join-Path $ScriptsDir "python.exe"
+
+# The installer and CLI use the same Python presentation once source is available.
+function Invoke-Presentation {
+    param([string[]]$PresentationArgs)
+    $backend = Join-Path $InstallDir "pistol\install_backend.py"
+    if (Test-Path -LiteralPath $backend) {
+        & py -3 -B $backend @PresentationArgs
+        if ($LASTEXITCODE -ne 0) { throw "Pistol presentation failed." }
+    }
+}
+
+function Show-Banner {
+    Invoke-Presentation -PresentationArgs @("--banner")
+}
+
+function Show-ProgressBar {
+    param([int]$Percent, [string]$Status)
+    Invoke-Presentation -PresentationArgs @("--percent", "$Percent", "--label", $Status)
+}
+
+function Show-Complete {
+    Invoke-Presentation -PresentationArgs @("--percent", "100", "--label", "Installed", "--complete")
+}
+
+function Fail-Install {
+    param(
+        [string]$Message
+    )
+
+    Write-Host ""
+    Write-Host ""
+    Write-Host "Installation failed." -ForegroundColor Red
+    Write-Host $Message -ForegroundColor Red
+    exit 1
+}
+
+function Test-CommandExists {
+    param(
+        [string]$Name
+    )
+
+    return $null -ne (Get-Command $Name -ErrorAction SilentlyContinue)
+}
+
+function Add-ToUserPath {
+    param(
+        [string]$PathToAdd
+    )
+
+    $currentUserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+
+    if ([string]::IsNullOrWhiteSpace($currentUserPath)) {
+        $currentUserPath = ""
+    }
+
+    $entries = $currentUserPath -split ";" | Where-Object {
+        -not [string]::IsNullOrWhiteSpace($_)
+    }
+
+    $alreadyPresent = $false
+
+    foreach ($entry in $entries) {
+        try {
+            if (
+                [System.IO.Path]::GetFullPath($entry.TrimEnd("\")) -eq
+                [System.IO.Path]::GetFullPath($PathToAdd.TrimEnd("\"))
+            ) {
+                $alreadyPresent = $true
+                break
+            }
+        }
+        catch {
+            # Ignore malformed PATH entries.
+        }
+    }
+
+    if (-not $alreadyPresent) {
+        if ([string]::IsNullOrWhiteSpace($currentUserPath)) {
+            $newPath = $PathToAdd
+        }
+        else {
+            $newPath = "$currentUserPath;$PathToAdd"
+        }
+
+        [Environment]::SetEnvironmentVariable(
+            "Path",
+            $newPath,
+            "User"
+        )
+    }
+
+    # Also update PATH for the current installer process.
+    if ($env:Path -notlike "*$PathToAdd*") {
+        $env:Path = "$env:Path;$PathToAdd"
+    }
+}
+
+Write-Host "Preparing Pistol installation..."
+
+try {
+    # --------------------------------------------------------
+    # System checks
+    # --------------------------------------------------------
+
+    Show-ProgressBar 5 "Checking system..."
+
+    if (-not (Test-CommandExists "git")) {
+        throw "Git was not found. Install Git for Windows and make sure 'git' is on PATH."
+    }
+
+    if (-not (Test-CommandExists "py")) {
+        throw "The Windows Python launcher 'py' was not found. Install Python 3.11 or newer."
+    }
+
+    $pythonVersion = & py -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+
+    if (-not $pythonVersion) {
+        throw "Python could not be started."
+    }
+
+    Show-ProgressBar 10 "Python $pythonVersion detected..."
+
+    # --------------------------------------------------------
+    # Install directory
+    # --------------------------------------------------------
+
+    Show-ProgressBar 15 "Preparing installation directory..."
+
+    if (-not (Test-Path $InstallRoot)) {
+        New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
+    }
+
+    # --------------------------------------------------------
+    # Clone / update source
+    # --------------------------------------------------------
+
+    if (Test-Path (Join-Path $InstallDir ".git")) {
+        Show-ProgressBar 25 "Updating Pistol..."
+
+        & git -C $InstallDir fetch --quiet
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Git fetch failed."
+        }
+
+        & git -C $InstallDir pull --ff-only --quiet
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Git pull failed."
+        }
+    }
+    elseif (Test-Path $InstallDir) {
+        Show-ProgressBar 20 "Cleaning incomplete installation..."
+
+        Remove-Item $InstallDir -Recurse -Force
+        Show-ProgressBar 25 "Downloading Pistol..."
+
+        & git clone --quiet $RepoUrl $InstallDir
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Git clone failed."
+        }
+    }
+    else {
+        Show-ProgressBar 25 "Downloading Pistol..."
+
+        & git clone --quiet $RepoUrl $InstallDir
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Git clone failed."
+        }
+    }
+
+    # --------------------------------------------------------
+    # Create virtual environment
+    # --------------------------------------------------------
+
+    Show-Banner
+    Show-ProgressBar 45 "Creating isolated environment..."
+
+    if (-not (Test-Path $PythonExe)) {
+        & py -m venv $VenvDir
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create Pistol virtual environment."
+        }
+    }
+
+    if (-not (Test-Path $PythonExe)) {
+        throw "Pistol virtual environment was created, but python.exe could not be found."
+    }
+
+    # --------------------------------------------------------
+    # Upgrade packaging tools
+    # --------------------------------------------------------
+
+    Show-ProgressBar 58 "Preparing Python environment..."
+
+    & $PythonExe -m pip install --upgrade pip --quiet
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to update pip."
+    }
+
+    # --------------------------------------------------------
+    # Install Pistol
+    # --------------------------------------------------------
+
+    Show-ProgressBar 70 "Installing Pistol..."
+
+    & $PythonExe -m pip install -e $InstallDir --quiet
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Pistol package installation failed."
+    }
+
+    # --------------------------------------------------------
+    # PATH
+    # --------------------------------------------------------
+
+    Show-ProgressBar 86 "Configuring command access..."
+
+    Add-ToUserPath $ScriptsDir
+
+    # --------------------------------------------------------
+    # Verify
+    # --------------------------------------------------------
+
+    Show-ProgressBar 94 "Verifying installation..."
+
+    $PistolExe = Join-Path $ScriptsDir "pistol.exe"
+
+    if (-not (Test-Path $PistolExe)) {
+        throw "pistol.exe was not created during installation."
+    }
+
+    & $PistolExe --version | Out-Null
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Pistol was installed but failed its verification check."
+    }
+
+    # --------------------------------------------------------
+    # Complete
+    # --------------------------------------------------------
+
+    Show-ProgressBar 99 "Finalizing..."
+    Start-Sleep -Milliseconds 200
+
+    Show-Complete
+
+    Write-Host ""
+    Write-Host "Pistol CLI installed successfully." -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Installed to:"
+    Write-Host "  $InstallDir"
+    Write-Host ""
+    Write-Host "Try:"
+    Write-Host "  pistol --help"
+    Write-Host "  pistol doctor"
+    Write-Host "  pistol shrimp"
+    Write-Host ""
+    Write-Host "If 'pistol' is not recognized in this terminal,"
+    Write-Host "open a new terminal window so Windows reloads your PATH."
+    Write-Host ""
+}
+catch {
+    Fail-Install $_.Exception.Message
+}
+>>>>>>> 717a075 (Add LECAP, requirements, WSL, and HTTPS support)

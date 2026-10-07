@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pistol / WSL Console</title>
+  <link rel="stylesheet" href="/assets/vendor/xterm.css">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script defer src="/assets/vendor/xterm.js"></script>
+  <script defer src="/assets/vendor/addon-fit.js"></script>
+  <script defer src="/assets/app.js"></script>
+</head>
+<body>
+  <header><a class="brand" href="/">PISTOL <span>/ WSL</span></a><div class="connection"><span id="distro">Connecting</span><span class="badge" id="connection">LOCAL CONSOLE</span></div></header>
+  <div class="layout">
+    <nav aria-label="Console pages">
+      <div class="nav-label">WORKSPACE</div>
+      <button data-page="terminal" class="active"><span>›_</span>Terminal</button>
+      <button data-page="files"><span>▤</span>Files</button>
+      <button data-page="processes"><span>≋</span>Processes</button>
+      <button data-page="ports"><span>⇄</span>Ports</button>
+      <button data-page="services"><span>◇</span>Services</button>
+      <button data-page="system"><span>◎</span>System</button>
+      <button data-page="chambers"><span>▦</span>Chambers</button>
+      <div class="nav-foot"><span class="dot"></span> Localhost only<br><small id="identity">Normal Linux user</small></div>
+    </nav>
+    <main>
+      <div id="notice" role="alert" hidden></div>
+      <section id="terminal" class="page active">
+        <div class="page-heading"><div><div class="eyebrow">YOUR LINUX WORKSPACE</div><h1>Terminal</h1><p>A live shell. Right where you work.</p></div><button id="new-terminal">New session <span>↗</span></button></div>
+        <div class="terminal-card"><div class="terminal-bar"><span><i class="dot"></i> <span id="terminal-label">Connecting to shell</span></span><small>PTY / xterm-256color</small></div><div id="terminal-host"></div></div>
+        <div class="hint">Ctrl+C interrupt <span>·</span> Ctrl+D exit <span>·</span> Ctrl+Shift+C / V copy & paste <span>·</span> Closing this tab ends its shell</div>
+      </section>
+      <section id="files" class="page">
+        <div class="page-heading"><div><div class="eyebrow">EXPLORE & EDIT</div><h1>Files</h1><p>Your Linux home and mounted drives.</p></div><div class="actions"><button id="new-file">New file</button><button id="new-folder">New folder</button><button id="upload-button" class="primary">Upload</button><input id="upload" type="file" hidden></div></div>
+        <div class="toolbar"><button id="back" title="Back" aria-label="Back">←</button><button id="forward" title="Forward" aria-label="Forward">→</button><button id="parent" title="Parent directory" aria-label="Parent directory">↑</button><button id="home">Home</button><form id="path-form"><input id="path" aria-label="Absolute Linux directory"><button>Go</button></form></div>
+        <div id="file-info" class="hint">Select a file to inspect or edit it. Symlinks are listed but not followed.</div>
+        <div id="file-list" class="table-wrap"></div>
+        <div id="editor" class="card" hidden><div class="editor-bar"><strong id="editor-name"></strong><div class="actions"><button id="close-editor">Close</button><button id="save-file" class="primary">Save changes</button></div></div><textarea id="editor-text" spellcheck="false" aria-label="File contents"></textarea></div>
+      </section>
+      <section id="processes" class="page"><div class="page-heading"><div><div class="eyebrow">RUNTIME</div><h1>Processes</h1><p>Live activity across your distribution.</p></div><input class="filter" data-filter="processes" placeholder="Filter processes…" aria-label="Filter processes"></div><div id="processes-list" class="table-wrap"></div></section>
+      <section id="ports" class="page"><div class="page-heading"><div><div class="eyebrow">NETWORK</div><h1>Listening ports</h1><p>Find the services behind your connections.</p></div><input class="filter" data-filter="ports" placeholder="Filter ports…" aria-label="Filter ports"></div><p id="ports-note" class="hint"></p><div id="ports-list" class="table-wrap"></div></section>
+      <section id="services" class="page"><div class="page-heading"><div><div class="eyebrow">SYSTEMD</div><h1>Services</h1><p>Manage services with your Linux permissions.</p></div><div class="actions"><select id="service-scope" aria-label="Service scope"><option value="system">System services</option><option value="user">User services</option></select><input class="filter" data-filter="services" placeholder="Filter services…" aria-label="Filter services"></div></div><p id="services-note" class="hint"></p><div id="services-list" class="table-wrap"></div></section>
+      <section id="system" class="page"><div class="page-heading"><div><div class="eyebrow">DISTRIBUTION</div><h1>System overview</h1><p>A pulse on your Linux environment.</p></div><span class="badge">UPDATES EVERY 2 SECONDS</span></div><div id="metrics" class="metrics"></div><div id="system-details" class="card details"></div></section>
+      <section id="chambers" class="page"><div class="page-heading"><div><div class="eyebrow">PISTOL RUNTIMES</div><h1>Chambers</h1><p>Your projects, together in one place.</p></div><button id="refresh-chambers">Refresh</button></div><p id="chambers-note" class="hint"></p><div id="chambers-list" class="table-wrap"></div></section>
+    </main>
+  </div>
+  <footer><span id="cpu">CPU —</span><span id="ram">RAM —</span><span id="disk">DISK —</span><span id="uptime">UPTIME —</span><span class="footer-brand">PISTOL WSL CONSOLE</span></footer>
+</body>
+</html>
