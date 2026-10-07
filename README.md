@@ -299,4 +299,4 @@ MIT
 
 ## DISCLAIMER!!!
 
-This project was vibe coded meaning AI helped code this project! The code has been human reviewed and revises! 
+This project was vibe coded meaning AI helped code this project! The code has been human reviewed and revisesed! 
