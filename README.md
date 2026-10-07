@@ -2,7 +2,7 @@
 
 # Pistol CLI
 
-<<<<<<< HEAD
+ HEAD
 A Windows-first developer toolkit for running, inspecting, debugging, and mapping projects from the terminal.
 =======
 **No AI functionality, providers, models, embeddings, accounts, API keys, containers, hosted services, or Windows Service.** Core operations work offline. LECAP's background proxy starts only when explicitly requested. Initial package installation and explicitly requested dependency installation may need the internet unless you have a local wheel cache.
@@ -560,7 +560,9 @@ Development disclaimer: Pistol was vibe coded with assistance from Codex, GPT As
 <<<<<<< HEAD
 =======
 Generated runtime state stays outside the repository. The editable install's `.venv`, Python bytecode and packaging metadata are standard development artifacts covered by `.gitignore`.
-#   P i s t o l - C L I  
- #   P i s t o l - C L I  
+#   P i s t o l - C L I 
+ 
+ #   P i s t o l - C L I 
+ 
  
 >>>>>>> 717a075 (Add LECAP, requirements, WSL, and HTTPS support)
