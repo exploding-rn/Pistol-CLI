@@ -295,3 +295,8 @@ Features that affect system configuration are intended to be explicit rather tha
 ## License
 
 MIT
+
+
+## DISCLAIMER!!!
+
+This project was vibe coded meaning AI helped code this project! The code has been human reviewed and revises! 
