@@ -2,7 +2,7 @@
 
 A Windows-first developer toolkit for running, inspecting, debugging, and mapping projects from the terminal.
 
-**No AI functionality, providers, models, embeddings, accounts, API keys, containers, hosted services, or Windows Service.**
+**Completely OFFLINE**
 
 Core operations work offline. LECAP's background proxy starts only when explicitly requested. Initial package installation and explicitly requested dependency installation may need the internet unless you have a local wheel cache.
 
